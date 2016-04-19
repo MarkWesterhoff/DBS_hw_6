@@ -17,9 +17,42 @@ MIN_MOVIE_ID = 119182
 MAX_MOVIE_ID = 3619455
 
 
-class fileReader():
-	def __init__(filename):
-		self.f = filename
+# class idxReader():
+# 	def __init__(self, folder, filename, primary, ):
+# 		self.folder = folder
+# 		self.file = filename
+# 		self.fields = fields #dict
+# 		self.numpages = 0
+		
+
+# 	def foo(self):
+# 		while not done:
+# 			with open(BASE+folder+file) as f:
+# 				next_file = None
+# 				# plus one for each node it goes to
+# 				self.numpages += 1;
+# 				node = f.readline().strip()
+# 				assert node in ('internal', 'leaf')
+# 				reader = csv.reader(f, delimiter=",")
+# 				# doesn't correctly handle last line of files because it isnt in csv format
+# 				for row in reader:
+# 					print row
+# 					# Internal node
+# 					if node == 'internal':
+
+# 						if row['movieid'] >= self.movieid_low:
+# 							next_file = row['pageid']
+# 							break
+# 					elif node == 'leaf':
+# 						if row['movieid'] >= self.movieid_low and row['movieid'] <= self.movieid_high:
+# 							found = True
+# 							#if row['actorid'] >= self.actorid_low and row['actorid'] <= self.actorid_high:
+# 							actorids.append(row['actorid'])
+# 						else:
+# 							# end of block of movie ids
+# 							if found == True:
+# 								found = False
+# 								break
 
 
 
@@ -35,22 +68,22 @@ class Query:
 		if self.query['movieid_low'] == '*':
 			self.movieid_low = MIN_MOVIE_ID
 		else:
-			self.movieid_low = self.query['movieid_low']
+			self.movieid_low = int(self.query['movieid_low'])
 
 		if self.query['movieid_high'] == '*':
 			self.movieid_high = MAX_MOVIE_ID
 		else:
-			self.movieid_high = self.query['movieid_high']
+			self.movieid_high = int(self.query['movieid_high'])
 
 		if self.query['actorid_low'] == '*':
 			self.actorid_low = MIN_ACTOR_ID
 		else:
-			self.actorid_low = self.query['actorid_low']
+			self.actorid_low = int(self.query['actorid_low'])
 
 		if self.query['actorid_high'] == '*':
 			self.actorid_high = MAX_ACTOR_ID
 		else:
-			self.actorid_high = self.query['actorid_high']
+			self.actorid_high = int(self.query['actorid_high'])
 
 		self.results = dict()
 
@@ -67,37 +100,64 @@ class Query:
 		 then actors_id_idx to find the names of these actors.
 		'''
 		node = 'internal'
-		next_file = 'root.txt'
+		file = 'root.txt'
+		next_file = None
 		num_pages = {'movie_idx' : 0, 'movie_table' : 0, 'actor_idx' : 0, 'actor_table' : 0}
 
+		#*********************************
 		# Going through movie_ma_idx
+		#**********************************
+
 		actorids = list()
 		done = False
 		found = False
+		# Loop through each file it goes through
 		while not done:
-			with open(BASE+'movieroles_ma_idx/'+next_file) as f:
+			with open(BASE+'movieroles_ma_idx/'+file) as f:
 				next_file = None
-				# 1 for each internal node
+				# plus one for each node it goes to
 				num_pages['movie_idx'] += 1;
 				node = f.readline().strip()
 				assert node in ('internal', 'leaf')
-				reader = csv.DictReader(f, delimiter=",",fieldnames=['movieid', 'actorid', 'pageid'])
-				# doesn't correctly handle last line of files
+				reader = csv.DictReader(f, delimiter=",", fieldnames = ['movieid', 'actorid', 'pageid'])
+				# doesn't correctly handle last line of files because it isnt in csv format
 				for row in reader:
-					print row
-					if node == 'internal' and row['movieid'] >= self.movieid_low:
-						next_file = row['pageid']
+					# last line; move onto next file
+					if '.txt' in row['movieid']:
+						next_file = row['movieid']
 						break
+
+					# Internal node
+					if node == 'internal':
+						if row['movieid'] >= self.movieid_low:
+							next_file = row['pageid']
+							break
+
+					# leaf node
 					elif node == 'leaf':
-						if row['movieid'] >= self.movieid_low and row['movieid'] <= self.movieid_high:
+						if int(row['movieid']) >= self.movieid_low and int(row['movieid']) <= self.movieid_high:
 							found = True
-							if row['actorid'] >= self.actorid_low and row['actorid'] <= self.actorid_high:
+							if int(row['actorid']) >= self.actorid_low and int(row['actorid']) <= self.actorid_high:
 								actorids.append(row['actorid'])
 						else:
-							# end of block of movie ids
+							# end of sequential block of movie ids that fit the requirements
 							if found == True:
 								found = False
 								break
+			# i.e. last file
+			if next_file is None:
+				done = True
+
+			file = next_file
+
+		print actorids
+		
+		#*********************************
+		# Going through movie_ma_idx
+		#**********************************
+		
+
+
 
 
     				
