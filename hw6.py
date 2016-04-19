@@ -99,15 +99,14 @@ class Query:
 		Scans movieroles_ma_idx index to find all actors,
 		 then actors_id_idx to find the names of these actors.
 		'''
-		node = 'internal'
-		file = 'root.txt'
-		next_file = None
 		num_pages = {'movie_idx' : 0, 'movie_table' : 0, 'actor_idx' : 0, 'actor_table' : 0}
 
 		#*********************************
 		# Going through movie_ma_idx
 		#**********************************
-
+		node = 'internal'
+		file = 'root.txt'
+		next_file = None
 		actorids = list()
 		done = False
 		found = False
@@ -129,7 +128,7 @@ class Query:
 
 					# Internal node
 					if node == 'internal':
-						if row['movieid'] >= self.movieid_low:
+						if int(row['movieid']) >= self.movieid_low:
 							next_file = row['pageid']
 							break
 
@@ -139,9 +138,8 @@ class Query:
 							found = True
 							if int(row['actorid']) >= self.actorid_low and int(row['actorid']) <= self.actorid_high:
 								actorids.append(row['actorid'])
-						else:
-							# end of sequential block of movie ids that fit the requirements
-							if found == True:
+						# end of sequential block of movie ids that fit the requirements
+						elif found == True:
 								found = False
 								break
 			# i.e. last file
@@ -151,14 +149,74 @@ class Query:
 			file = next_file
 
 		print actorids
-		
+
 		#*********************************
-		# Going through movie_ma_idx
+		# Going through actor_idx
 		#**********************************
 		
+		pageids = list()
+		
+		# Loop through each file it goes through
+		for aid in actorids:
+			node = 'internal'
+			file = 'root.txt'
+			next_file = None
+			done = False
+			found = False
+			while not done:
+				with open(BASE+'actors_id_idx/'+file) as f:
+					next_file = None
+					# plus one for each node it goes to
+					num_pages['actor_idx'] += 1;
+					node = f.readline().strip()
+					assert node in ('internal', 'leaf')
+					reader = csv.DictReader(f, delimiter=",", fieldnames = ['id', 'pageid'])
+					# doesn't correctly handle last line of files because it isnt in csv format
+					print file
+					for row in reader:
+						# last line; move onto next file
+						if '.txt' in row['id']:
+							next_file = row['id']
+							break
+
+						# Internal node
+						if node == 'internal':
+							if int(row['id']) >= int(aid):
+								next_file = row['pageid']
+								break
+
+						# leaf node
+						elif node == 'leaf':
+							if row['id'] == aid:
+								pageids.append(row['pageid'])
+								done = True
+								break
+
+				if next_file is None:
+					done = True
+
+				file = next_file
 
 
+		#*********************************
+		# Going through actor_table
+		#**********************************
 
+		actors = list()
+		for page, aid in zip(pageids, actorids):
+			file = 'page%s.txt' % (page);
+			with open(BASE+'actors_table/'+file) as f:
+				num_pages['actor_table'] += 1;
+				reader = csv.DictReader(f, delimiter=",", fieldnames = ['atype', 'id', 'name', 'surname'])
+				for row in reader:
+					if row['id'] == aid:
+						actors.append(" ".join([row['name'], row['surname']]))
+						break
+		
+		print actorids
+		print pageids
+		print actors
+		print num_pages
 
     				
 
