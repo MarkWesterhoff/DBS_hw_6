@@ -15,6 +15,8 @@ MIN_ACTOR_ID = 1
 MAX_ACTOR_ID = 149374 #note: there is a line for leaf374.txt, which doesnt exist
 MIN_MOVIE_ID = 119182
 MAX_MOVIE_ID = 3619455
+NUM_ACTOR_PAGES = 2104
+NUM_MOVIE_PAGES = 4017
 
 
 # class idxReader():
@@ -88,9 +90,9 @@ class Query:
 		self.results = dict()
 
 	def run(self):
-		self.results[1] = self.method_one()
-		# self.results[2] = self.method_two()
-		# self.results[3] = self.method_three()
+		#self.results[1] = self.method_one()
+		#self.results[2] = self.method_two()
+		self.results[3] = self.method_three()
 		# return self.print_results()
 
 
@@ -147,8 +149,6 @@ class Query:
 				done = True
 
 			file = next_file
-
-		print actorids
 
 		#*********************************
 		# Going through actor_idx
@@ -227,14 +227,133 @@ class Query:
 		 then scan the whole actors_table to find the names 
 		 of these actors (if their id is in the set of actor ids found).
 		'''
-		pass
+		
+		num_pages = {'movie_idx' : 0, 'movie_table' : 0, 'actor_idx' : 0, 'actor_table' : 0}
+
+		#*********************************
+		# Going through movie_ma_idx
+		#**********************************
+		node = 'internal'
+		file = 'root.txt'
+		next_file = None
+		actorids = list()
+		done = False
+		found = False
+		# Loop through each file it goes through
+		while not done:
+			with open(BASE+'movieroles_ma_idx/'+file) as f:
+				next_file = None
+				# plus one for each node it goes to
+				num_pages['movie_idx'] += 1;
+				node = f.readline().strip()
+				assert node in ('internal', 'leaf')
+				reader = csv.DictReader(f, delimiter=",", fieldnames = ['movieid', 'actorid', 'pageid'])
+				# doesn't correctly handle last line of files because it isnt in csv format
+				for row in reader:
+					# last line; move onto next file
+					if '.txt' in row['movieid']:
+						next_file = row['movieid']
+						break
+
+					# Internal node
+					if node == 'internal':
+						if int(row['movieid']) >= self.movieid_low:
+							next_file = row['pageid']
+							break
+
+					# leaf node
+					elif node == 'leaf':
+						if int(row['movieid']) >= self.movieid_low and int(row['movieid']) <= self.movieid_high:
+							found = True
+							if int(row['actorid']) >= self.actorid_low and int(row['actorid']) <= self.actorid_high:
+								actorids.append(row['actorid'])
+						# end of sequential block of movie ids that fit the requirements
+						elif found == True:
+								found = False
+								break
+			# i.e. last file
+			if next_file is None:
+				done = True
+
+			file = next_file
+
+
+		#*********************************
+		# Going through actor_table
+		#**********************************
+
+		actors = list()
+		done = False
+		page = 1
+		while not done and page <= NUM_ACTOR_PAGES:
+			file = 'page%s.txt' % (page);
+			with open(BASE+'actors_table/'+file) as f:
+				num_pages['actor_table'] += 1;
+				reader = csv.DictReader(f, delimiter=",", fieldnames = ['atype', 'id', 'name', 'surname'])
+				for row in reader:
+					if row['id'] in actorids:
+						actors.append(" ".join([row['name'], row['surname']]))
+						actorids.remove(row["id"])
+						print actorids, row['id'], file
+						if len(actorids) == 0:
+							done = True
+							break
+			page += 1
+
+		print actors
+		print num_pages
 
 	def method_three(self):
 		'''
 		Scan both tables to answer the question; no indices.
 		 Scan movieroles_table first, then actors_table.
 		'''
-		pass
+		
+		num_pages = {'movie_idx' : 0, 'movie_table' : 0, 'actor_idx' : 0, 'actor_table' : 0}
+
+		#*********************************
+		# Going through movie_table
+		#**********************************
+
+		actorids = list()
+		done = False
+		for page in xrange(1, NUM_MOVIE_PAGES+1):
+			file = 'page%s.txt' % (page);
+			with open(BASE+'movieroles_table/'+file) as f:
+				num_pages['movie_table'] += 1;
+				reader = csv.DictReader(f, delimiter=",", fieldnames = ['actorid', 'info_1', 'info_2', 'movieid', 'role'])
+				for row in reader:
+					if ( int(row['movieid']) >= self.movieid_low and int(row['movieid']) <= self.movieid_high and 
+					int(row['actorid']) >= self.actorid_low and int(row['actorid']) <= self.actorid_high and
+					row['actorid'] not in actorids ):
+						actorids.append(row['actorid'])
+			page += 1
+
+		#*********************************
+		# Going through actor_table
+		#**********************************
+
+		actors = list()
+		done = False
+		page = 1
+		while not done and page <= NUM_ACTOR_PAGES:
+			file = 'page%s.txt' % (page);
+			with open(BASE+'actors_table/'+file) as f:
+				num_pages['actor_table'] += 1;
+				reader = csv.DictReader(f, delimiter=",", fieldnames = ['atype', 'id', 'name', 'surname'])
+				for row in reader:
+					if row['id'] in actorids:
+						actors.append(" ".join([row['name'], row['surname']]))
+						actorids.remove(row["id"])
+						print actorids, row['id'], file
+						if len(actorids) == 0:
+							done = True
+							break
+			page += 1
+
+		print actors
+		print num_pages
+
 
 	# def print_results():
 	# 	'''
