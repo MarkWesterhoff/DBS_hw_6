@@ -8,13 +8,21 @@ import argparse
 import csv
 import os
 
-
-BASE='hw6_files/hw6_files/'
-
+# Hard coded values. Change accordingly.
+# base path for the files
+BASE_PATH='hw6_files/hw6_files/'
+# paths for each folder
+MOVIE_IDX_PATH 	 = BASE_PATH +'movieroles_ma_idx/'
+MOVIE_TABLE_PATH = BASE_PATH +'movieroles_table/'
+ACTOR_IDX_PATH 	 = BASE_PATH +'actors_id_idx/'
+ACTOR_TABLE_PATH = BASE_PATH +'actors_table/'
+# Used to replace '*'s. If the data is subject to change, you can just make
+# them 0 and MAX_INT or something; they don't need to be this accurate
 MIN_ACTOR_ID = 1
 MAX_ACTOR_ID = 149374 #note: there is a line for leaf374.txt, which doesnt exist
 MIN_MOVIE_ID = 119182
 MAX_MOVIE_ID = 3619455
+# Used to go through all pages in a table for method two and three
 NUM_ACTOR_PAGES = 2104
 NUM_MOVIE_PAGES = 4017
 
@@ -50,15 +58,105 @@ class Query:
 		else:
 			self.actorid_high = int(self.query['actorid_high'])
 
-		self.results = dict()
+		self.results = list()
 
 
 	def run(self):
-		self.results[1] = self.method_one()
-		self.results[2] = self.method_two()
-		self.results[3] = self.method_three()
-		# return self.print_results()
+		self.results.append( self.method_one() )
+		self.results.append( self.method_two() )
+		self.results.append( self.method_three() )
+		# make sure results match
+		assert set(self.results[0][0]) == set(self.results[1][0]) == set(self.results[2][0])
+		return self.print_results()
 
+
+	def method_one(self):
+		'''
+		Scans movieroles_ma_idx index to find all actors,
+		 then actors_id_idx to find the names of these actors.
+		'''
+		num_pages = {'movieroles_ma_idx' : 0, 'movieroles_table' : 0, 'actors_id_idx' : 0, 'actors_table' : 0}
+
+		actorids = list()
+		actorids, num_pages['movieroles_ma_idx'] = self.get_actor_ids_from_movie_index_table()
+
+		pageids = list()
+		pageids, num_pages['actors_id_idx'] = self.get_actor_pages_from_actor_index_table_given_actor_ids(actorids)
+
+		actors = list()
+		actors, num_pages['actors_table'] = self.get_actor_names_from_actor_table_given_pages(pageids, actorids)
+		
+		return actors, num_pages
+
+    				
+	def method_two(self):
+		'''
+		Scans movieroles_ma_idx index to find all actors,
+		 then scan the whole actors_table to find the names 
+		 of these actors (if their id is in the set of actor ids found).
+		'''
+		
+		num_pages = {'movieroles_ma_idx' : 0, 'movieroles_table' : 0, 'actors_id_idx' : 0, 'actors_table' : 0}
+
+		actorids = list()
+		actorids, num_pages['movieroles_ma_idx'] = self.get_actor_ids_from_movie_index_table()
+
+		pageids = list()
+		pageids, num_pages['actors_id_idx'] = self.get_actor_pages_from_actor_index_table_given_actor_ids(actorids)
+
+		actors = list()
+		actors, num_pages['actors_table'] = self.get_actor_names_from_actor_table_given_ids(actorids)
+
+		return actors, num_pages
+		
+
+	def method_three(self):
+		'''
+		Scan both tables to answer the question; no indices.
+		 Scan movieroles_table first, then actors_table.
+		'''
+		
+		num_pages = {'movieroles_ma_idx' : 0, 'movieroles_table' : 0, 'actors_id_idx' : 0, 'actors_table' : 0}
+
+		actorids = list()
+		actorids, num_pages['movieroles_table'] = self.get_actor_ids_from_movie_table()
+
+		actors = list()
+		actors, num_pages['actors_table'] = self.get_actor_names_from_actor_table_given_ids(actorids)
+
+		return actors, num_pages
+
+
+	def print_results(self):
+		'''
+		Prints the results of a query
+		Unfinished
+		'''
+
+		actors = self.results[0][0]
+		actors.sort()
+
+		output = "Query: " + ','.join([self.query['movieid_low'],
+								self.query['movieid_high'],
+								self.query['actorid_low'],
+								self.query['actorid_high']]) + '\n'
+		output += '\n'
+		output += 'Results: (%d Total)\n' % (len(actors))
+		output += "\n".join([ '\t%s' % (a) for a in actors]) + '\n'
+		output += '\n'
+		for i in range(0,3):
+			num_pages = self.results[i][1]
+			total = sum([v for v in num_pages.values()])
+			output += "Method %i total cost: %i pages\n" % (i+1, total)
+			for k in ["movieroles_ma_idx", "movieroles_table", "actors_id_idx", "actors_table"]:
+				if num_pages[k] == 0:
+					continue
+				output += "\t%i page %s" % (num_pages[k], k)
+				if "idx" in k:
+					output += " index"
+				output += "\n"		
+			output += "\n"	
+		return output
 
 
 	def get_actor_ids_from_movie_index_table(self):
@@ -74,7 +172,7 @@ class Query:
 		found = False
 		# Loop through each file it goes through
 		while not done:
-			with open(BASE+'movieroles_ma_idx/'+file) as f:
+			with open(MOVIE_IDX_PATH+file) as f:
 				next_file = None
 				# plus one for each node it goes to
 				num_pages += 1;
@@ -128,7 +226,7 @@ class Query:
 			done = False
 			found = False
 			while not done:
-				with open(BASE+'actors_id_idx/'+file) as f:
+				with open(ACTOR_IDX_PATH+file) as f:
 					next_file = None
 					# plus one for each node it goes to
 					num_pages += 1;
@@ -171,7 +269,7 @@ class Query:
 		actors = list()
 		for page, aid in zip(pageids, actorids):
 			file = 'page%s.txt' % (page);
-			with open(BASE+'actors_table/'+file) as f:
+			with open(ACTOR_TABLE_PATH+file) as f:
 				num_pages += 1;
 				reader = csv.DictReader(f, delimiter=",", fieldnames = ['atype', 'id', 'name', 'surname'])
 				for row in reader:
@@ -192,7 +290,7 @@ class Query:
 		page = 1
 		while not done and page <= NUM_ACTOR_PAGES:
 			file = 'page%s.txt' % (page);
-			with open(BASE+'actors_table/'+file) as f:
+			with open(ACTOR_TABLE_PATH+file) as f:
 				num_pages += 1;
 				reader = csv.DictReader(f, delimiter=",", fieldnames = ['atype', 'id', 'name', 'surname'])
 				for row in reader:
@@ -217,7 +315,7 @@ class Query:
 		done = False
 		for page in xrange(1, NUM_MOVIE_PAGES+1):
 			file = 'page%s.txt' % (page);
-			with open(BASE+'movieroles_table/'+file) as f:
+			with open(MOVIE_TABLE_PATH+file) as f:
 				num_pages += 1;
 				reader = csv.DictReader(f, delimiter=",", fieldnames = ['actorid', 'info_1', 'info_2', 'movieid', 'role'])
 				for row in reader:
@@ -230,84 +328,6 @@ class Query:
 		return actorids, num_pages
 
 
-	def method_one(self):
-		'''
-		Scans movieroles_ma_idx index to find all actors,
-		 then actors_id_idx to find the names of these actors.
-		'''
-		num_pages = {'movieroles_idx' : 0, 'movieroles_table' : 0, 'actors_idx' : 0, 'actors_table' : 0}
-
-		actorids = list()
-		actorids, num_pages['movieroles_idx'] = self.get_actor_ids_from_movie_index_table()
-
-		pageids = list()
-		pageids, num_pages['actors_idx'] = self.get_actor_pages_from_actor_index_table_given_actor_ids(actorids)
-
-		actors = list()
-		actors, num_pages['actors_table'] = self.get_actor_names_from_actor_table_given_pages(pageids, actorids)
-		
-		return actors, num_pages
-
-    				
-	def method_two(self):
-		'''
-		Scans movieroles_ma_idx index to find all actors,
-		 then scan the whole actors_table to find the names 
-		 of these actors (if their id is in the set of actor ids found).
-		'''
-		
-		num_pages = {'movieroles_idx' : 0, 'movieroles_table' : 0, 'actors_idx' : 0, 'actors_table' : 0}
-
-		actorids = list()
-		actorids, num_pages['movieroles_idx'] = self.get_actor_ids_from_movie_index_table()
-
-		pageids = list()
-		pageids, num_pages['actors_idx'] = self.get_actor_pages_from_actor_index_table_given_actor_ids(actorids)
-
-		actors = list()
-		actors, num_pages['actors_table'] = self.get_actor_names_from_actor_table_given_ids(actorids)
-
-		return actors, num_pages
-		
-
-	def method_three(self):
-		'''
-		Scan both tables to answer the question; no indices.
-		 Scan movieroles_table first, then actors_table.
-		'''
-		
-		num_pages = {'movie_idx' : 0, 'movie_table' : 0, 'actor_idx' : 0, 'actor_table' : 0}
-
-		actorids = list()
-		actorids, num_pages['movie_table'] = self.get_actor_ids_from_movie_table()
-
-		actors = list()
-		actors, num_pages['actors_table'] = self.get_actor_names_from_actor_table_given_ids(actorids)
-
-		return actors, num_pages
-
-
-	# def print_results():
-	# 	'''
-	# 	Prints the results of a query
-	# 	Unfinished
-	# 	'''
-	# 	assert self.results[1]
-	# 	assert self.results[2]
-	# 	assert self.results[3]
-	# 	output = "Query: " + ','.join(str(self.vals['movieid_low']),
-	# 							str(self.vals['movieid_high']),
-	# 							str(self.vals['actorid_low']),
-	# 							str(self.vals['actorid_high'])) + '\n'
-	# 	output += '\n'
-	# 	output += 'Results:\n' + [ str(i)+'\n' for i in self.results['results']]
-	# 	output += '\n'
-	# 	For i in range(1,4):
-	# 		output += "Method %i total cost: %i pages\n" % (i, self.results[i]['Total'])
-	# 				+ ""
-	# 	return output
-
-
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("input_file_name")
@@ -317,5 +337,5 @@ if __name__ == "__main__":
 		for row in reader:
 			q = Query(row)
 			q.run()
-	        #print q.print_results()
-	        print '\n' + '*'*20 + '\n'
+			#print q.print_results()
+			print '\n' + '*'*20 + '\n'
