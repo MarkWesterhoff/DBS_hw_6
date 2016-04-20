@@ -137,7 +137,7 @@ class Query:
 								self.query['actorid_low'],
 								self.query['actorid_high']]) + '\n'
 		output += '\n'
-		output += 'Results1: (%d Total)\n' % (len(actors))
+		output += 'Results: (%d Total)\n' % (len(actors))
 		output += "\n".join([ '\t%s' % (a) for a in actors]) + '\n'
 		output += '\n'
 		for i in range(0,3):
