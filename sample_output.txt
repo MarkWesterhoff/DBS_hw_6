@@ -1,227 +1,192 @@
 Query: 3617552,*,142901,*
 
-Results1: (6 Total)
-	Claude Lulé
-	Eihi Shiina
-	Emmanuel Guez
-	Saori Tachibana
-	Stuart (I) Townsend
-	Weijian Liu
+Results (6 total):
+    Claude Lulé
+    Eihi Shiina
+    Emmanuel Guez
+    Saori Tachibana
+    Stuart (I) Townsend
+    Weijian Liu
 
 Method 1 total cost: 21 pages
-	3 pages movieroles_ma_idx index
-	12 pages actors_id_idx index
-	6 pages actors_table
+    3 page movieroles_ma_idx index
+    12 page actors_id_idx index
+    6 page actors_table
 
 Method 2 total cost: 1534 pages
-	3 pages movieroles_ma_idx index
-	1531 pages actors_table
+    3 page movieroles_ma_idx index
+    1531 page actors_table
 
 Method 3 total cost: 5548 pages
-	4017 pages movieroles_table
-	1531 pages actors_table
-
-
-********************
-
+    4017 page movieroles_table
+    1531 page actors_table
 
 Query: *,160000,45000,*
 
-Results1: (2 Total)
-	Jeff Aaron
-	Paul (XLIV) Wilson
+Results (2 total):
+    Jeff Aaron
+    Paul (XLIV) Wilson
 
 Method 1 total cost: 9 pages
-	3 pages movieroles_ma_idx index
-	4 pages actors_id_idx index
-	2 pages actors_table
+    3 page movieroles_ma_idx index
+    4 page actors_id_idx index
+    2 page actors_table
 
 Method 2 total cost: 1454 pages
-	3 pages movieroles_ma_idx index
-	1451 pages actors_table
+    3 page movieroles_ma_idx index
+    1451 page actors_table
 
 Method 3 total cost: 5468 pages
-	4017 pages movieroles_table
-	1451 pages actors_table
-
-
-********************
-
+    4017 page movieroles_table
+    1451 page actors_table
 
 Query: *,*,5,5
 
-Results1: (3 Total)
-	Matt (XV) Black
-	Matt (XV) Black
-	Matt (XV) Black
+Results (1 total):
+    Matt (XV) Black
 
-Method 1 total cost: 746 pages
-	737 pages movieroles_ma_idx index
-	6 pages actors_id_idx index
-	3 pages actors_table
+Method 1 total cost: 740 pages
+    737 page movieroles_ma_idx index
+    2 page actors_id_idx index
+    1 page actors_table
 
-Method 2 total cost: 2841 pages
-	737 pages movieroles_ma_idx index
-	2104 pages actors_table
+Method 2 total cost: 2741 pages
+    737 page movieroles_ma_idx index
+    2004 page actors_table
 
 Method 3 total cost: 6021 pages
-	4017 pages movieroles_table
-	2004 pages actors_table
-
-
-********************
-
+    4017 page movieroles_table
+    2004 page actors_table
 
 Query: 263273,263297,50000,60000
 
-Results1: (4 Total)
-	Billy Lockwood
-	Carlos (I) Telles
-	Matthew T. Metzler
-	Matthew T. Metzler
+Results (3 total):
+    Billy Lockwood
+    Carlos (I) Telles
+    Matthew T. Metzler
 
-Method 1 total cost: 15 pages
-	3 pages movieroles_ma_idx index
-	8 pages actors_id_idx index
-	4 pages actors_table
+Method 1 total cost: 12 pages
+    3 page movieroles_ma_idx index
+    6 page actors_id_idx index
+    3 page actors_table
 
-Method 2 total cost: 2107 pages
-	3 pages movieroles_ma_idx index
-	2104 pages actors_table
+Method 2 total cost: 1878 pages
+    3 page movieroles_ma_idx index
+    1875 page actors_table
 
 Method 3 total cost: 5892 pages
-	4017 pages movieroles_table
-	1875 pages actors_table
-
-
-********************
-
+    4017 page movieroles_table
+    1875 page actors_table
 
 Query: 741900,741900,1344,6700
 
-Results1: (3 Total)
-	Richard (I) Madden
-	Thomas Brodie-Sangster
-	Will (I) Champion
+Results (3 total):
+    Richard (I) Madden
+    Thomas Brodie-Sangster
+    Will (I) Champion
 
 Method 1 total cost: 13 pages
-	4 pages movieroles_ma_idx index
-	6 pages actors_id_idx index
-	3 pages actors_table
+    4 page movieroles_ma_idx index
+    6 page actors_id_idx index
+    3 page actors_table
 
 Method 2 total cost: 2061 pages
-	4 pages movieroles_ma_idx index
-	2057 pages actors_table
+    4 page movieroles_ma_idx index
+    2057 page actors_table
 
 Method 3 total cost: 6074 pages
-	4017 pages movieroles_table
-	2057 pages actors_table
-
-
-********************
-
+    4017 page movieroles_table
+    2057 page actors_table
 
 Query: 1109564,1109564,*,*
 
-Results1: (1 Total)
-	John (II) Oliver
+Results (1 total):
+    John (II) Oliver
 
 Method 1 total cost: 6 pages
-	3 pages movieroles_ma_idx index
-	2 pages actors_id_idx index
-	1 page actors_table
+    3 page movieroles_ma_idx index
+    2 page actors_id_idx index
+    1 page actors_table
 
 Method 2 total cost: 1097 pages
-	3 pages movieroles_ma_idx index
-	1094 pages actors_table
+    3 page movieroles_ma_idx index
+    1094 page actors_table
 
 Method 3 total cost: 5111 pages
-	4017 pages movieroles_table
-	1094 pages actors_table
-
-
-********************
-
+    4017 page movieroles_table
+    1094 page actors_table
 
 Query: 741900,741900,105541,*
 
-Results1: (12 Total)
-	A.J. (I) Kennedy
-	Alexandra Dowling
-	Darragh (II) O'Connor
-	Ellie Kendrick
-	Hugh David Irvine
-	Iain Glen
-	John (XXIV) Bradley
-	Kit Harington
-	Laurence Doherty
-	Mackenzie Crook
-	Michael McElhatton
-	Natalia Tena
+Results (12 total):
+    A.J. (I) Kennedy
+    Alexandra Dowling
+    Darragh (II) O'Connor
+    Ellie Kendrick
+    Hugh David Irvine
+    Iain Glen
+    John (XXIV) Bradley
+    Kit Harington
+    Laurence Doherty
+    Mackenzie Crook
+    Michael McElhatton
+    Natalia Tena
 
 Method 1 total cost: 40 pages
-	4 pages movieroles_ma_idx index
-	24 pages actors_id_idx index
-	12 pages actors_table
+    4 page movieroles_ma_idx index
+    24 page actors_id_idx index
+    12 page actors_table
 
 Method 2 total cost: 1855 pages
-	4 pages movieroles_ma_idx index
-	1851 pages actors_table
+    4 page movieroles_ma_idx index
+    1851 page actors_table
 
 Method 3 total cost: 5868 pages
-	4017 pages movieroles_table
-	1851 pages actors_table
-
-
-********************
-
+    4017 page movieroles_table
+    1851 page actors_table
 
 Query: 3396785,3396900,*,5611
 
-Results1: (28 Total)
-	Andrew Bicknell
-	Antwan Lewis
-	Ben Roethlisberger
-	Bill Ibrahim
-	Brandon (I) Blackwell
-	Brendan Boyce
-	David Lesley
-	Eric (I) Roberts
-	Gary (II) Ryder
-	Greg Sammis
-	Joe Fishel
-	John (II) Cashin
-	Jonn Faircrest
-	Joseph Mazurk
-	Laine Edwards
-	Luke Oscar Ford
-	Maggie Gyllenhaal
-	Michael Jeremiah
-	Nick (I) Julian
-	Noelle (I) Lynn
-	Pete Buzzsaw Holland
-	Phillip James Griffith
-	Rafael Zubizarreta
-	Ryan (XVIII) Green
-	Sean P. McCarthy
-	Trevor (I) White
-	Uri Gavriel
-	Vivek (II) Shah
+Results (28 total):
+    Andrew Bicknell
+    Antwan Lewis
+    Ben Roethlisberger
+    Bill Ibrahim
+    Brandon (I) Blackwell
+    Brendan Boyce
+    David Lesley
+    Eric (I) Roberts
+    Gary (II) Ryder
+    Greg Sammis
+    Joe Fishel
+    John (II) Cashin
+    Jonn Faircrest
+    Joseph Mazurk
+    Laine Edwards
+    Luke Oscar Ford
+    Maggie Gyllenhaal
+    Michael Jeremiah
+    Nick (I) Julian
+    Noelle (I) Lynn
+    Pete Buzzsaw Holland
+    Phillip James Griffith
+    Rafael Zubizarreta
+    Ryan (XVIII) Green
+    Sean P. McCarthy
+    Trevor (I) White
+    Uri Gavriel
+    Vivek (II) Shah
 
 Method 1 total cost: 89 pages
-	5 pages movieroles_ma_idx index
-	56 pages actors_id_idx index
-	28 pages actors_table
+    5 page movieroles_ma_idx index
+    56 page actors_id_idx index
+    28 page actors_table
 
 Method 2 total cost: 2076 pages
-	5 pages movieroles_ma_idx index
-	2071 pages actors_table
+    5 page movieroles_ma_idx index
+    2071 page actors_table
 
 Method 3 total cost: 6088 pages
-	4017 pages movieroles_table
-	2071 pages actors_table
-
-
-********************
-
+    4017 page movieroles_table
+    2071 page actors_table
 

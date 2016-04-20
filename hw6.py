@@ -137,8 +137,8 @@ class Query:
 								self.query['actorid_low'],
 								self.query['actorid_high']]) + '\n'
 		output += '\n'
-		output += 'Results: (%d Total)\n' % (len(actors))
-		output += "\n".join([ '\t%s' % (a) for a in actors]) + '\n'
+		output += 'Results (%d total):\n' % (len(actors))
+		output += "\n".join([ '    %s' % (a) for a in actors]) + '\n'
 		output += '\n'
 		for i in range(0,3):
 			num_pages = self.results[i][1]
@@ -147,16 +147,12 @@ class Query:
 			for k in ["movieroles_ma_idx", "movieroles_table", "actors_id_idx", "actors_table"]:
 				if num_pages[k] == 0:
 					continue
-				output += "\t%i" % num_pages[k]
-				if num_pages[k] > 1:
-					output += " pages "
-				else:
-					output += " page "
-				output += k
+				output += "    %i page %s" % (num_pages[k], k)
 				if "idx" in k:
 					output += " index"
 				output += "\n"		
-			output += "\n"	
+			if i < 2:
+				output += "\n"	
 		return output
 
 
@@ -197,7 +193,8 @@ class Query:
 					elif node == 'leaf':
 						if int(row['movieid']) >= self.movieid_low and int(row['movieid']) <= self.movieid_high:
 							found = True
-							if int(row['actorid']) >= self.actorid_low and int(row['actorid']) <= self.actorid_high:
+							if (int(row['actorid']) >= self.actorid_low and int(row['actorid']) <= self.actorid_high
+							and row['actorid'] not in actorids):
 								actorids.append(row['actorid'])
 						# end of sequential block of movie ids that fit the requirements
 						elif found == True:
@@ -340,4 +337,3 @@ if __name__ == "__main__":
 			q = Query(row)
 			q.run()
 			print q.print_results()
-			print '*'*20 + '\n\n'
