@@ -15,5 +15,9 @@ Input file:
 	'*'s can be inputted to represent any value
 
 Note:
-	- Tested with all the sample input.
+	- Tested with all the sample input. Output matches, but added spacing and '*' lines
+		for readability (and is requested in the pdf)
 	- Any hardcoded values are at the top of the file.
+	- Assumes txt files
+		- Assumes 'page#.txt' exist in tables
+		- Assumes 'root.txt' exists and files start w/ 'internal' or 'leaf' in indexes

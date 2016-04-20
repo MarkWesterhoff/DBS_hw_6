@@ -65,8 +65,7 @@ class Query:
 		self.results.append( self.method_one() )
 		self.results.append( self.method_two() )
 		self.results.append( self.method_three() )
-		# make sure results match
-		assert set(self.results[0][0]) == set(self.results[1][0]) == set(self.results[2][0])
+
 		return self.print_results()
 
 
@@ -85,7 +84,7 @@ class Query:
 
 		actors = list()
 		actors, num_pages['actors_table'] = self.get_actor_names_from_actor_table_given_pages(pageids, actorids)
-		
+
 		return actors, num_pages
 
     				
@@ -100,9 +99,6 @@ class Query:
 
 		actorids = list()
 		actorids, num_pages['movieroles_ma_idx'] = self.get_actor_ids_from_movie_index_table()
-
-		pageids = list()
-		pageids, num_pages['actors_id_idx'] = self.get_actor_pages_from_actor_index_table_given_actor_ids(actorids)
 
 		actors = list()
 		actors, num_pages['actors_table'] = self.get_actor_names_from_actor_table_given_ids(actorids)
@@ -141,7 +137,7 @@ class Query:
 								self.query['actorid_low'],
 								self.query['actorid_high']]) + '\n'
 		output += '\n'
-		output += 'Results: (%d Total)\n' % (len(actors))
+		output += 'Results1: (%d Total)\n' % (len(actors))
 		output += "\n".join([ '\t%s' % (a) for a in actors]) + '\n'
 		output += '\n'
 		for i in range(0,3):
@@ -151,7 +147,12 @@ class Query:
 			for k in ["movieroles_ma_idx", "movieroles_table", "actors_id_idx", "actors_table"]:
 				if num_pages[k] == 0:
 					continue
-				output += "\t%i page %s" % (num_pages[k], k)
+				output += "\t%i" % num_pages[k]
+				if num_pages[k] > 1:
+					output += " pages "
+				else:
+					output += " page "
+				output += k
 				if "idx" in k:
 					output += " index"
 				output += "\n"		
@@ -219,10 +220,10 @@ class Query:
 		pageids = list()
 		
 		# Loop through each file it goes through
+		num_pages = 0
 		for aid in actorids:
 			file = 'root.txt'
 			next_file = None
-			num_pages = 0
 			done = False
 			found = False
 			while not done:
@@ -257,7 +258,8 @@ class Query:
 					done = True
 
 				file = next_file
-			return pageids, num_pages
+		return pageids, num_pages
+ 
 
 
 	def get_actor_names_from_actor_table_given_pages(self, pageids, actorids):
@@ -337,5 +339,5 @@ if __name__ == "__main__":
 		for row in reader:
 			q = Query(row)
 			q.run()
-			#print q.print_results()
-			print '\n' + '*'*20 + '\n'
+			print q.print_results()
+			print '*'*20 + '\n\n'
